@@ -109,8 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setupMobileNavigation();
 
-  setupVoiceInput();
-
 });
 
 
@@ -206,10 +204,10 @@ function setupEvents() {
   }
 
 
-  /* Desktop navigation */
+  /* Navigation (desktop + mobile) */
 
   document
-    .querySelectorAll(".nav-item[data-view]")
+    .querySelectorAll("[data-view]")
     .forEach(button => {
 
       button.addEventListener(
@@ -221,25 +219,22 @@ function setupEvents() {
 
 
           document
-            .querySelectorAll(".nav-item[data-view]")
+            .querySelectorAll("[data-view]")
             .forEach(item => {
-              item.classList.remove("active");
+
+              item.classList.toggle(
+                "active",
+                item === button
+              );
+
             });
-
-
-          document
-            .querySelectorAll(".mobile-nav-item[data-view]")
-            .forEach(item => {
-              item.classList.remove("active");
-            });
-
-
-          button.classList.add("active");
 
 
           updatePageInformation();
 
           render();
+
+          closeMobileNavigation();
 
         }
       );
@@ -384,74 +379,6 @@ function setupMobileNavigation() {
   );
 
 
-  /* Mobile view buttons */
-
-  mobileNav
-    .querySelectorAll(
-      ".mobile-nav-item[data-view]"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        event => {
-
-          event.preventDefault();
-
-          event.stopPropagation();
-
-
-          currentView =
-            button.dataset.view;
-
-
-          /* Desktop active state */
-
-          document
-            .querySelectorAll(
-              ".nav-item[data-view]"
-            )
-            .forEach(item => {
-
-              item.classList.remove(
-                "active"
-              );
-
-            });
-
-
-          /* Mobile active state */
-
-          document
-            .querySelectorAll(
-              ".mobile-nav-item[data-view]"
-            )
-            .forEach(item => {
-
-              item.classList.remove(
-                "active"
-              );
-
-            });
-
-
-          button.classList.add(
-            "active"
-          );
-
-
-          updatePageInformation();
-
-          render();
-
-          closeMobileNavigation();
-
-        }
-      );
-
-    });
-
-
   /* Mobile appearance button */
 
   const mobileThemeToggle =
@@ -540,37 +467,6 @@ function toggleMobileNavigation() {
       isOpen
         ? "true"
         : "false"
-    );
-
-  }
-
-}
-
-
-function showMobileNavigation() {
-
-  const mobileNav =
-    document.getElementById("mobileNav");
-
-  const mobileMenu =
-    document.getElementById("mobileMenu");
-
-
-  if (!mobileNav) {
-    return;
-  }
-
-
-  mobileNav.classList.add(
-    "open"
-  );
-
-
-  if (mobileMenu) {
-
-    mobileMenu.setAttribute(
-      "aria-expanded",
-      "true"
     );
 
   }
@@ -1336,58 +1232,52 @@ function updateCounts() {
    PAGE INFORMATION
    ===================================================== */
 
+const VIEW_INFO = {
+
+  today: [
+    "MY DAY",
+    "Today",
+    "Today's tasks"
+  ],
+
+  upcoming: [
+    "PLANNING",
+    "Upcoming",
+    "Upcoming tasks"
+  ],
+
+  completed: [
+    "DONE",
+    "Completed",
+    "Completed tasks"
+  ]
+
+};
+
+
 function updatePageInformation() {
 
-  if (
-    currentView === "today"
-  ) {
+  const info =
+    VIEW_INFO[currentView];
 
-    pageEyebrow.textContent =
-      "MY DAY";
 
-    pageTitle.textContent =
-      "Today";
-
-    sectionTitle.textContent =
-      "Today's tasks";
+  if (!info) {
 
     return;
 
   }
 
 
-  if (
-    currentView === "upcoming"
-  ) {
-
-    pageEyebrow.textContent =
-      "PLANNING";
-
-    pageTitle.textContent =
-      "Upcoming";
-
-    sectionTitle.textContent =
-      "Upcoming tasks";
-
-    return;
-
-  }
+  pageEyebrow.textContent =
+    info[0];
 
 
-  if (
-    currentView === "completed"
-  ) {
+  pageTitle.textContent =
+    info[1];
 
-    pageEyebrow.textContent =
-      "DONE";
 
-    pageTitle.textContent =
-      "Completed";
-
-    sectionTitle.textContent =
-      "Completed tasks";
-
-  }
+  sectionTitle.textContent =
+    info[2];
 
 }
 
@@ -1395,6 +1285,26 @@ function updatePageInformation() {
 /* =====================================================
    EMPTY STATE
    ===================================================== */
+
+const EMPTY_COPY = {
+
+  today: [
+    "Your day is clear",
+    "Add something you want to get done today."
+  ],
+
+  upcoming: [
+    "Nothing planned yet",
+    "Tasks you schedule for later will appear here."
+  ],
+
+  completed: [
+    "Nothing completed yet",
+    "Finished tasks will appear here."
+  ]
+
+};
+
 
 function updateEmptyState() {
 
@@ -1436,41 +1346,17 @@ function updateEmptyState() {
   }
 
 
-  if (
-    currentView === "today"
-  ) {
+  const copy =
+    EMPTY_COPY[currentView];
+
+
+  if (copy) {
 
     emptyTitle.textContent =
-      "Your day is clear";
+      copy[0];
 
     emptyText.textContent =
-      "Add something you want to get done today.";
-
-  }
-
-
-  if (
-    currentView === "upcoming"
-  ) {
-
-    emptyTitle.textContent =
-      "Nothing planned yet";
-
-    emptyText.textContent =
-      "Tasks you schedule for later will appear here.";
-
-  }
-
-
-  if (
-    currentView === "completed"
-  ) {
-
-    emptyTitle.textContent =
-      "Nothing completed yet";
-
-    emptyText.textContent =
-      "Finished tasks will appear here.";
+      copy[1];
 
   }
 
@@ -1481,11 +1367,7 @@ function updateEmptyState() {
    DATE HELPERS
    ===================================================== */
 
-function getTodayString() {
-
-  const date =
-    new Date();
-
+function getTodayString(date = new Date()) {
 
   const year =
     date.getFullYear();
@@ -1580,9 +1462,7 @@ function formatTaskDate(dateString) {
 
 
   const tomorrowString =
-    formatDateForInput(
-      tomorrow
-    );
+    getTodayString(tomorrow);
 
 
   if (
@@ -1612,33 +1492,7 @@ function formatTaskDate(dateString) {
 }
 
 
-function formatDateForInput(date) {
 
-  const year =
-    date.getFullYear();
-
-
-  const month =
-    String(
-      date.getMonth() + 1
-    ).padStart(
-      2,
-      "0"
-    );
-
-
-  const day =
-    String(
-      date.getDate()
-    ).padStart(
-      2,
-      "0"
-    );
-
-
-  return `${year}-${month}-${day}`;
-
-}
 
 
 /* =====================================================
@@ -1720,9 +1574,9 @@ function toggleTheme() {
   );
 
 
-  updateThemeIcon();
+  updateThemeIcon("themeIcon");
 
-  updateMobileThemeIcon();
+  updateThemeIcon("mobileThemeIcon");
 
 
   showToast(
@@ -1753,67 +1607,29 @@ function loadTheme() {
   }
 
 
-  updateThemeIcon();
+  updateThemeIcon("themeIcon");
 
-  updateMobileThemeIcon();
+  updateThemeIcon("mobileThemeIcon");
 
 }
-
-
-function updateThemeIcon() {
+function updateThemeIcon(id) {
 
   const icon =
-    document.getElementById(
-      "themeIcon"
-    );
+    document.getElementById(id);
 
 
-  if (!icon) {
-    return;
+  if (icon) {
+
+    icon.textContent =
+      document.body.classList.contains(
+        "dark"
+      )
+        ? "☀"
+        : "☾";
+
   }
 
-
-  const dark =
-    document.body.classList.contains(
-      "dark"
-    );
-
-
-  icon.textContent =
-    dark
-      ? "☀"
-      : "☾";
-
 }
-
-
-function updateMobileThemeIcon() {
-
-  const icon =
-    document.getElementById(
-      "mobileThemeIcon"
-    );
-
-
-  if (!icon) {
-    return;
-  }
-
-
-  const dark =
-    document.body.classList.contains(
-      "dark"
-    );
-
-
-  icon.textContent =
-    dark
-      ? "☀"
-      : "☾";
-
-}
-
-
 /* =====================================================
    TOAST
    ===================================================== */
@@ -1863,12 +1679,7 @@ function showToast(message) {
 
 function generateId() {
 
-  return (
-    Date.now().toString(36) +
-    Math.random()
-      .toString(36)
-      .substring(2, 8)
-  );
+  return crypto.randomUUID();
 
 }
 
@@ -1901,199 +1712,6 @@ function escapeHtml(value) {
 
 
   return div.innerHTML;
-
-}
-
-
-/* =====================================================
-   VOICE TASK INPUT
-   ===================================================== */
-
-const voiceTaskButton =
-  document.getElementById(
-    "voiceTaskButton"
-  );
-
-
-let recognition = null;
-let isListening = false;
-
-
-function setupVoiceInput() {
-
-  if (!voiceTaskButton) {
-    return;
-  }
-
-
-  const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-
-  if (!SpeechRecognition) {
-
-    return;
-
-  }
-
-
-  recognition =
-    new SpeechRecognition();
-
-
-  recognition.lang =
-    "en-US";
-
-
-  recognition.continuous =
-    false;
-
-
-  recognition.interimResults =
-    false;
-
-
-  recognition.onstart =
-    () => {
-
-      isListening =
-        true;
-
-
-      voiceTaskButton.classList.add(
-        "listening"
-      );
-
-
-      showToast(
-        "Listening..."
-      );
-
-    };
-
-
-  recognition.onresult =
-    event => {
-
-      const transcript =
-        event.results[0][0]
-          .transcript
-          .trim();
-
-
-      if (!transcript) {
-
-        showToast(
-          "I didn't hear anything."
-        );
-
-        return;
-
-      }
-
-
-      openModal();
-
-
-      taskTitle.value =
-        transcript;
-
-
-      taskTitle.focus();
-
-
-      showToast(
-        "Task captured"
-      );
-
-    };
-
-
-  recognition.onerror =
-    event => {
-
-      console.error(
-        "Voice error:",
-        event.error
-      );
-
-
-      if (
-        event.error ===
-        "not-allowed"
-      ) {
-
-        showToast(
-          "Please allow microphone access."
-        );
-
-      }
-
-      else if (
-        event.error ===
-        "no-speech"
-      ) {
-
-        showToast(
-          "I didn't hear anything. Try again."
-        );
-
-      }
-
-      else {
-
-        showToast(
-          "Voice input failed. Try again."
-        );
-
-      }
-
-    };
-
-
-  recognition.onend =
-    () => {
-
-      isListening =
-        false;
-
-
-      voiceTaskButton.classList.remove(
-        "listening"
-      );
-
-    };
-
-
-  voiceTaskButton.addEventListener(
-    "click",
-    () => {
-
-      if (!recognition) {
-
-        showToast(
-          "Voice input is not supported in this browser."
-        );
-
-        return;
-
-      }
-
-
-      if (isListening) {
-
-        recognition.stop();
-
-        return;
-
-      }
-
-
-      recognition.start();
-
-    }
-  );
 
 }
 

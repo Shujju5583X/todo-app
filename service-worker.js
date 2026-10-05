@@ -3,9 +3,11 @@ const CACHE_NAME = "todo-app-v3";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
-  "./style.css",
-  "./app.js",
-  "./manifest.json"
+  "./css/style.css",
+  "./js/app.js",
+  "./manifest.json",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png"
 ];
 
 /* =====================================================

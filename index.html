@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#003135">
   <meta name="description" content="A simple personal productivity app">
-  <link rel="manifest" href="manifest.json">
-
   <title>Todo</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
@@ -72,42 +72,30 @@
         <button class="mobile-menu" id="mobileMenu">
           ☰
         </button>
-        <header class="mobile-header">
 
-  <div class="brand">
-    <div class="brand-mark">✓</div>
-    <span>todo</span>
-  </div>
+        <div class="mobile-nav" id="mobileNav">
 
-  <button class="mobile-menu" id="mobileMenu">
-    ☰
-  </button>
+          <button class="mobile-nav-item active" data-view="today">
+            <span>○</span>
+            <span>Today</span>
+          </button>
 
-  <div class="mobile-nav" id="mobileNav">
+          <button class="mobile-nav-item" data-view="upcoming">
+            <span>◷</span>
+            <span>Upcoming</span>
+          </button>
 
-    <button class="mobile-nav-item active" data-view="today">
-      <span>○</span>
-      <span>Today</span>
-    </button>
+          <button class="mobile-nav-item" data-view="completed">
+            <span>✓</span>
+            <span>Completed</span>
+          </button>
 
-    <button class="mobile-nav-item" data-view="upcoming">
-      <span>◷</span>
-      <span>Upcoming</span>
-    </button>
+          <button class="mobile-nav-item" id="mobileThemeToggle">
+            <span>☾</span>
+            <span>Appearance</span>
+          </button>
 
-    <button class="mobile-nav-item" data-view="completed">
-      <span>✓</span>
-      <span>Completed</span>
-    </button>
-
-    <button class="mobile-nav-item" id="mobileThemeToggle">
-      <span>☾</span>
-      <span>Appearance</span>
-    </button>
-
-  </div>
-
-</header>
+        </div>
 
       </header>
 
@@ -125,25 +113,13 @@
 
         </div>
 
-        <div class="topbar-actions">
-
-  <button
-    class="voice-task-button"
-    id="voiceTaskButton"
-    title="Add task by voice"
-    aria-label="Add task by voice"
-  >
-    <span>🎙</span>
-  </button>
-
-  <button
-    class="add-task-button"
-    id="openTaskModal"
-  >
-    <span>+</span>
-    Add task
-  </button>
-     </div>
+        <button
+          class="add-task-button"
+          id="openTaskModal"
+        >
+          <span>+</span>
+          Add task
+        </button>
       </header>
 
 
@@ -361,7 +337,7 @@
   </div>
 
 
-  <script src="app.js"></script>
+  <script src="js/app.js"></script>
 
 </body>
 </html>
